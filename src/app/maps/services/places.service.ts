@@ -40,19 +40,23 @@ export class PlacesService {
 
   getPlacesByQuery( query: string = '' ) {
     //evaluar quan el query es null
+    if (query.length === 0) {
+      this.isLoadingPlaces = false;
+      this.places = [];
+      return
+    }
 
     if (!this.userLocation) throw Error('There is not user location')
 
     this.isLoadingPlaces = true;
 
-    this.placesApi.get<PlacesResponse>(`${ query }.json`, {
+    this.placesApi.get<PlacesResponse>(`/${ query }.json`, {
       params: {
         proximity: this.userLocation?.join(',')
       }
     })
       .subscribe( res => {
-        console.log(res.features)
-        this.isLoadingPlaces = true
+        this.isLoadingPlaces = false;
         this.places = res.features
       });
   }
